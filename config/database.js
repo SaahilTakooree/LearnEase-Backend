@@ -96,3 +96,6 @@ export function getCollection(collectionName) {
         throw error;
     }
 }
+
+// Export the collections.
+export {COLLECTIONS};
