@@ -3,6 +3,7 @@ import 'dotenv/config' // Import and load environment variable from '.env' file 
 import express from "express"; // Import 'Express.js' framework to create the server and handle HTTP requests.
 import cors from "cors"; // Import 'CORS' middleware to allows the server to handle request from other domains.
 import { loggerMiddleware } from './middleware/logger.js'; // Import 'loggerMiddleware' to log all request and responce.
+import { staticFilesMiddlesware }from './middleware/staticFiles.js'; // Import 'staticFilesMiddlesware' to send static file to the frontend.
 import { connectDatabase } from "./config/database.js"; // Import 'connectDatabase' function to handle the connection of the app to the server.
 
 
@@ -16,7 +17,8 @@ const port = process.env.PORT || 6969;
 // Middleware.
 app.use(cors()); // Enables CORS for all routes.
 app.use(express.json()); // Allows for automatic parsing of incoming JSON payloads in request.
-app.use(loggerMiddleware) // Allows for logging.
+app.use(loggerMiddleware); // Allows for logging.
+app.use(staticFilesMiddlesware); // Allows sending of static file to the front end.
 
 
 // Asynchronous function to start the server.
