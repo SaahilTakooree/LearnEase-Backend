@@ -1,40 +1,43 @@
-import express from "express";
-import cors from "cors";
-import { MongoClient } from "mongodb";
-import 'dotenv/config'
+// Import dependencies.
+import 'dotenv/config' // Import and load environment variable from '.env' file into 'process.env'
+import express from "express"; // Import 'Express.js' framework to create the server and handle HTTP requests.
+import cors from "cors"; // Import 'CORS' middleware to allows the server to handle request from other domains.
+import { loggerMiddleware } from './middleware/logger.js'; // Import 'loggerMiddleware' to log all request and responce.
+import { connectDatabase } from "./config/database.js"; // Import 'connectDatabase' function to handle the connection of the app to the server.
 
+
+// Create an instance of Express application to define routes, middlesware and starting the server.
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-const url = process.env.MONGO_URL;
-const client = new MongoClient(url);
+// Set the port that the server will listen on.
+const port = process.env.PORT || 6969;
 
-const collectionsToCheck = [
-    "lessons",
-    "orders",
-    "users"
-];
 
-async function start() {
-    await client.connect();
-    const database = client.db("LearnEase");
-    
-    const existingCollections = await database.listCollections(
-        {},
-        { nameOnly: true}
-    ).toArray();
-    const existingCollectionNames = existingCollections.map(collection => collection.name)
+// Middleware.
+app.use(cors()); // Enables CORS for all routes.
+app.use(express.json()); // Allows for automatic parsing of incoming JSON payloads in request.
+app.use(loggerMiddleware) // Allows for logging.
 
-    for (const name of collectionsToCheck) {
-        if (!existingCollectionNames.includes(name.toLowerCase())) {
-            await database.createCollection(name);
-        }
+
+// Asynchronous function to start the server.
+async function startServer() {
+    // Wait for the database to connect before starting the server.
+    try {
+
+        // Try to connect.
+        await connectDatabase();
+
+        // Start listening for incoming request on the specified port.
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}.`);
+        });
+    // If there is error when try to connect to the database, logs it then exit.
+    } catch (error) {
+        console.error("Fail to start server: ", error)
+        process.exit(1);
     }
 }
 
-start();
 
-app.listen(6969, () => {
-    console.log("Server is running on port 6969");
-})
+// Call function 'startServer' to inialise the database connection.
+startServer();
