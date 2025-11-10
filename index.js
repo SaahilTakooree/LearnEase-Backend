@@ -31,10 +31,10 @@ async function startServer() {
         await connectDatabase();
 
         // Dynamically import user routes.
-        const { default: router } = await import('./routes/user.routes.js');
+        const { default: userRouter } = await import('./routes/user.routes.js');
 
         // Mount user routes under '/api' path.
-        app.use('/api', router);
+        app.use('/api', userRouter);
 
         // Start listening for incoming request on the specified port.
         app.listen(port, () => {
