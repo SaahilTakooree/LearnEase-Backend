@@ -76,7 +76,7 @@ export class LessonService {
             console.log("Lesson Created.");
 
             // Return the created lesson object.
-            return await this.getLessonById(result.insertedID.toString());
+            return await this.getLessonById(result.insertedId.toString());
         } catch (error) {
             console.error("Error in creating lesson.", error);
             throw error;
@@ -133,7 +133,7 @@ export class LessonService {
             }
 
             // Delete the lesson from the collection.
-            const result = await this.collection.deleteLesson({ _id: lessonId });
+            const result = await this.collection.deleteOne({ _id: lessonId });
 
             console.log("Lesson deleted.");
 

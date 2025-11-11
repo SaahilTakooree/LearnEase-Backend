@@ -2,10 +2,9 @@
 import 'dotenv/config' // Import and load environment variable from '.env' file into 'process.env'
 import express from "express"; // Import 'Express.js' framework to create the server and handle HTTP requests.
 import cors from "cors"; // Import 'CORS' middleware to allows the server to handle request from other domains.
-import { loggerMiddleware } from './middlewares/logger.js'; // Import 'loggerMiddleware' to log all request and responce.
-import { staticFilesMiddlesware } from './middlewares/staticFiles.js'; // Import 'staticFilesMiddlesware' to send static file to the frontend.
+import { loggerMiddleware } from "./middlewares/logger.js"; // Import 'loggerMiddleware' to log all request and responce.
+import { staticFilesMiddlesware } from "./middlewares/staticFiles.js"; // Import 'staticFilesMiddlesware' to send static file to the frontend.
 import { connectDatabase } from "./config/database.js"; // Import 'connectDatabase' function to handle the connection of the app to the server.
-
 
 
 // Create an instance of Express application to define routes, middlesware and starting the server.
@@ -30,11 +29,11 @@ async function startServer() {
         // Try to connect.
         await connectDatabase();
 
-        // Dynamically import user routes.
-        const { default: userRouter } = await import('./routes/user.routes.js');
+        // Dynamically import routes.
+        const { default: routes } = await import('./routes/index.js');
 
-        // Mount user routes under '/api' path.
-        app.use('/api', userRouter);
+        // Mount routes under '/api' path.
+        app.use('/api', routes);
 
         // Start listening for incoming request on the specified port.
         app.listen(port, () => {
