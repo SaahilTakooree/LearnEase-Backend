@@ -51,18 +51,86 @@ function rotateLogs() {
 }
 
 
-// Function to write a message to the log file and the console.
-function writeLog(message) {
+// Function to write a message to the log file.
+function writeLog(level, message) {
+    try {
+        // Rotate the file before writing the new message.
+        rotateLogs();
 
-    // Rotate the file before writing the new message.
-    rotateLogs();
+        // Get the current log file path.
+        const logFile = getLogFile();
 
-    // Get the current log file path.
-    const logFile = getLogFile();
+        // Get the current time.
+        const timestamp = new Date().toISOString();
+        
+        // Format the data before inserting it.
+        const formatted = `[${level}] ${timestamp} ${message}\n`;
 
-    // Write the message the file and the console.
-    fs.appendFileSync(logFile, message + "\n", "utf-8");
-    console.log(message);
+        // Write the message the file.
+        fs.appendFileSync(logFile, formatted, "utf-8");
+    } catch (error) {
+        console.error("Logger failed:", error);
+    }
+}
+
+
+// Helper function to strignify object and hide sentive data.
+function strignifyObject(object) {
+    try {
+        // Return if the passin argument if it is not of type of object or empty.
+        if (!object || typeof object !== "object") {
+            return object
+        }
+
+        // Get a copy of the object being passed in
+        const copyObject = {...object};
+
+        // Hide sentive data
+        const sensitiveKeys = ["password"];
+        for (const key of Object.keys(copyObject)) {
+            if (sensitiveKeys.includes(key.toLowerCase())) {
+                copyObject[key] = "**HIDDEN FOR PRIVACY**";
+            }
+        }
+
+        // return a stringify of the clone object.
+        return JSON.stringify(copyObject, null, 2);
+    } catch {
+        return "[Unserialisable data.]"
+    }
+}
+
+
+// Override the console method to log console log to the file.
+const originalConsole = {
+    log: console.log,
+    info: console.info,
+    warn: console.warn,
+    error: console.error
+};
+
+console.log = (...args) => {
+    const message = args.map(a => (typeof a === "object" ? strignifyObject(a) : a)).join(" ");
+    writeLog("LOG", message);
+    originalConsole.log(...args);
+}
+
+console.info = (...args) => {
+    const message = args.map(a => (typeof a === "object" ? strignifyObject(a) : a)).join(" ");
+    writeLog("INFO", message);
+    originalConsole.info(...args);
+}
+
+console.warn = (...args) => {
+    const message = args.map(a => (typeof a === "object" ? strignifyObject(a) : a)).join(" ");
+    writeLog("WARN", message);
+    originalConsole.warn(...args);
+}
+
+console.error = (...args) => {
+    const message = args.map(a => (typeof a === "object" ? strignifyObject(a) : a)).join(" ");
+    writeLog("ERROR", message);
+    originalConsole.error(...args);
 }
 
 
@@ -72,16 +140,25 @@ export function loggerMiddleware(request, response, next) {
     // Record the start time of the request.
     const start = Date.now()
 
-    // Format and write the request information to the log.
-    const requestInfo = `[REQUEST] ${start.toString()} ${request.method} ${request.originalUrl} IP:${request.ip}`;
-    writeLog(requestInfo);
+    // Mask sensitive info in the request body
+    const maskedSensitveInfo = request.body && Object.keys(request.body).length ? strignifyObject(request.body) : "{}";
 
-    // Log when the responses finishes.
-    response.on("finish", () => {
+    // Format and write the request information to the log.
+    const requestInfo = `${request.method} ${request.originalUrl} IP:${request.ip} Body: ${maskedSensitveInfo}`;
+    writeLog("REQUEST", requestInfo);
+
+    // Get the original response send functio to log the payloads.
+    const originalSend = response.send;
+    response.send = function (body) {
         const duration = Date.now() - start;
-        const responseInfo = `[RESPONCE] ${new Date().toISOString()} Status: ${response.statusCode} Duration: ${duration}ms`;
-        writeLog(responseInfo);
-    });
+
+        const responseBody = typeof body === "object" ? strignifyObject(body) : String(body);
+
+        const responseInfo = `${request.method} ${request.originalUrl} Status: ${response.statusCode} Duration: ${duration}ms Body: ${responseBody}`;
+        writeLog("RESPONSE", responseInfo);
+
+        return originalSend.call(this, body);
+    }
 
     // Pass the control to the next middleware.
     next();

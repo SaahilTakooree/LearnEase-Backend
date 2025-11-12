@@ -39,7 +39,7 @@ export const getLessonByID = async (request, response) => {
         sendSuccess(response, lesson, "Lesson retrieved successfully.")
     } catch (error) {
         // Log any errors that might happen when when getting a specific lesson.
-        console.log("Fail to retrieve specific lesson", error);
+        console.error("Fail to retrieve specific lesson", error);
         
         // Send an error responce.
         sendError(response, error.message, 400)
@@ -63,7 +63,7 @@ export const createLesson = async (request, response) => {
         sendCreated(response, lesson, "Lesson created successfully.");  
     } catch (error) {
         // Log any errors that occurs during lesson the creation of a lesson.
-        console.log("Fail to create lesson", error);
+        console.error("Fail to create lesson", error);
 
         // Send an error responce.
         sendError(response, "Failed to create lesson", 500);
@@ -101,7 +101,7 @@ export const updateLesson = async (request, response) => {
         sendSuccess(response, updatedLesson, "Lesson updated successfully.");
     } catch (error) {
         // Log any errors that occurs during lesson the update of a lesson.
-        console.log("Fail to update lesson", error);
+        console.error("Fail to update lesson", error);
 
         // Send an error responce.
         sendError(response, "Failed to update lesson", 500);
@@ -124,7 +124,7 @@ export const deleteLesson = async (request, response) => {
         sendSuccess(response, result, "Lesson deleted successfully.");
     } catch (error) {
         // Log any errors that occurs during lesson deletion of a lesson.
-        console.log("Fail to delete lesson", error);
+        console.error("Fail to delete lesson", error);
 
         // Send an error responce.
         sendError(response, error.message, 400);
@@ -148,7 +148,7 @@ export const addStudentTolesson = async (request, response) => {
         sendSuccess(response, updatedLesson, "Student added to lesson successfully.");
     } catch (error) {
         // Log any errors that occurs during the addition of student to a lesson.
-        console.log("Fail to add student to a lesson", error);
+        console.error("Fail to add student to a lesson", error);
 
         // Send an not found responce.
         if (error.message === "Lesson not found.") {
@@ -177,7 +177,7 @@ export const removeStudentFromLesson = async (request, response) => {
         sendSuccess(response, updatedLesson, "Student removed from lesson successfully.");
     } catch (error) {
         // Log any errors that occurs during removal of student from a lesson.
-        console.log("Fail to remove student from a lesson", error);
+        console.erro("Fail to remove student from a lesson", error);
 
         // Send an error responce.
         sendError(response, error.message, 400);
@@ -195,7 +195,7 @@ export const getLessonByTeacher = async (request, response) => {
         sendSuccess(response, lessons, "Taught lessons retrieved successfully.");
     } catch (error) {
         // Log any errors that occurs during lesson taught lesson.
-        console.log("Fail to get taught lesson", error);
+        console.error("Fail to get taught lesson", error);
 
         // Send an error responce.
         sendError(response, error.message, 500);
@@ -213,7 +213,7 @@ export const getEnrolledLesson = async (request, response) => {
         sendSuccess(response, lessons, "Enrolled lessons retrieved successfully.");
     } catch (error) {
         // Log any errors that occurs during lesson getting enrolled lesson.
-        console.log("Fail to get enrolled in lesson", error);
+        console.error("Fail to get enrolled in lesson", error);
 
         // Send an error responce.
         sendError(response, error.message, 500);
