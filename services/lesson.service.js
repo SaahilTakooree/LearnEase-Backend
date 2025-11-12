@@ -106,7 +106,7 @@ export class LessonService {
             const result = await this.collection.findOneAndUpdate(
                 { _id: lessonId },
                 { $set: updateFields },
-                { ReturnDocument: 'after'}
+                { returnDocument: 'after'}
             );
 
             console.log(`Update lesson with id: ${lessonId}`);
@@ -127,7 +127,7 @@ export class LessonService {
             const lessonId = this.validateId(id);
 
             // Check to see if the lesson exist first.
-            const lesson = this.getLessonById(lessonId)
+            const lesson = await this.getLessonById(lessonId)
             if (!lesson) {
                 throw new Error(`Error in deleting lesson. Lesson with id ${lessonId} does not exist.`);
             }
@@ -138,7 +138,7 @@ export class LessonService {
             console.log("Lesson deleted.");
 
             // return a success.
-            return result.deleteCount > 0;
+            return result.deletedCount > 0;
         } catch (error) {
             console.error(`Error in deleting lesson with id: ${id}`, error)
             throw error;
@@ -176,7 +176,7 @@ export class LessonService {
                     $push: { students: { email: studentEmail } },
                     $set: { updatedAt: new Date() }
                 },
-                { ReturnDocument: 'after'}
+                { returnDocument: 'after'}
             );
 
             console.log(`Add student to lesson with id: ${id}`);
@@ -212,7 +212,7 @@ export class LessonService {
                     $pull: { students: { email: studentEmail } },
                     $set: { updatedAt: new Date() }
                 },
-                { ReturnDocument: 'after'}
+                { returnDocument: 'after'}
             );
             
             console.log(`Student remove from lesson: ${id}`);

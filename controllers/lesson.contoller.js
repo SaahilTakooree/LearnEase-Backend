@@ -28,7 +28,7 @@ export const getAllLessons = async (request, response) => {
 export const getLessonByID = async (request, response) => {
     try{
         // Get the lesson.
-        const lesson = await LESSONSERVICE.getLessonById();
+        const lesson = await LESSONSERVICE.getLessonById(request.params.id);
 
         // Send a not found reponse if no lesson is exist.
         if (!lesson) {
@@ -117,7 +117,7 @@ export const deleteLesson = async (request, response) => {
 
         // If the the delete was not able to delete, send an error responce.
         if (!result) {
-            sendError(response, "Failed to delete lesson", 404);
+            return sendError(response, "Failed to delete lesson", 404);
         }
 
         // Send a success response.
