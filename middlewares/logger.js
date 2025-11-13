@@ -86,7 +86,7 @@ function strignifyObject(object) {
         const copyObject = {...object};
 
         // Hide sentive data
-        const sensitiveKeys = ["password"];
+        const sensitiveKeys = ["password", "confirmPassword"];
         for (const key of Object.keys(copyObject)) {
             if (sensitiveKeys.includes(key.toLowerCase())) {
                 copyObject[key] = "**HIDDEN FOR PRIVACY**";

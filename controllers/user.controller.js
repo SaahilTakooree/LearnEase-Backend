@@ -63,7 +63,7 @@ export const signup = async (request, response) => {
 
         // Log a success and send a 200 Ok response with user data.
         console.log(`User signed up successfully: ${email}`);
-        sendCreated(res, user, 'User signed up successfully');
+        sendCreated(response, user, 'User signed up successfully');
     } catch (error) {
         // Log any errors that occurs during signup.
         console.error("Signup error:", error);

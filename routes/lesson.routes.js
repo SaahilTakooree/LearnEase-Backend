@@ -1,6 +1,6 @@
 // Import dependencies.
 import express from "express"; // Import 'Express' framework and the router class to define route handlers.
-import * as lessonController from "../controllers/lesson.contoller.js"; // Import all lesson controller as 'lessonController'.
+import * as lessonController from "../controllers/lesson.controller.js"; // Import all lesson controller as 'lessonController'.
 
 
 // Create a new router instance.
@@ -23,7 +23,7 @@ lessonRouter.put("/:id", lessonController.updateLesson);
 lessonRouter.delete("/:id", lessonController.deleteLesson);
 
 // Add a student to a lesson.
-lessonRouter.post("/:id/add-student", lessonController.addStudentTolesson);
+lessonRouter.post("/:id/add-student", lessonController.addStudentToLesson);
 
 // Remove a student from a lesson.
 lessonRouter.post("/:id/remove-student", lessonController.removeStudentFromLesson);

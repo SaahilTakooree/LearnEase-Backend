@@ -1,6 +1,7 @@
 // Import depencies.
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
-import { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents. 
+
 
 export class LessonService {
 
@@ -148,7 +149,7 @@ export class LessonService {
 
 
     // Function to add a student to a lessons.
-    async addStudentTolesson(lessonId, studentEmail) {
+    async addStudentToLesson(lessonId, studentEmail) {
         try {
             // Check if the lesson id is valid.
             const id = this.validateId(lessonId);

@@ -1,0 +1,62 @@
+[REQUEST] 2025-11-13T19:43:14.202Z POST /api/users/signup IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**",
+  "confirmPassword": "123456"
+}
+[LOG] 2025-11-13T19:43:14.370Z User signed up successfully: 1223@gmail.com
+[ERROR] 2025-11-13T19:43:14.375Z Signup error: {}
+[RESPONSE] 2025-11-13T19:43:14.383Z POST /api/users/signup Status: 500 Duration: 181ms Body: {"status":"error","message":"signup failed","timestamp":"2025-11-13T19:43:14.381Z"}
+[LOG] 2025-11-13T19:44:13.146Z Server is running on port 6969.
+[LOG] 2025-11-13T19:44:17.030Z Server is running on port 6969.
+[REQUEST] 2025-11-13T20:11:09.467Z POST /api/users/signup IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**",
+  "confirmPassword": "123456"
+}
+[LOG] 2025-11-13T20:11:10.373Z User signed up successfully: 1223@gmail.com
+[ERROR] 2025-11-13T20:11:10.378Z Signup error: {}
+[RESPONSE] 2025-11-13T20:11:10.387Z POST /api/users/signup Status: 500 Duration: 920ms Body: {"status":"error","message":"signup failed","timestamp":"2025-11-13T20:11:10.384Z"}
+[LOG] 2025-11-13T20:12:39.659Z Server is running on port 6969.
+[REQUEST] 2025-11-13T20:12:42.704Z POST /api/users/signup IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**",
+  "confirmPassword": "123456"
+}
+[ERROR] 2025-11-13T20:12:42.831Z Error in creating user: 1223@gmail.com {}
+[ERROR] 2025-11-13T20:12:42.850Z Signup error: {}
+[RESPONSE] 2025-11-13T20:12:42.861Z POST /api/users/signup Status: 401 Duration: 159ms Body: {"status":"error","message":"A user with this email already exist.","timestamp":"2025-11-13T20:12:42.856Z"}
+[REQUEST] 2025-11-13T20:12:57.777Z POST /api/users/signup IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**",
+  "confirmPassword": "123456"
+}
+[LOG] 2025-11-13T20:12:57.952Z User signed up successfully: 1223@gmail.com
+[RESPONSE] 2025-11-13T20:12:57.956Z POST /api/users/signup Status: 201 Duration: 180ms Body: {"status":"succsss","message":"User signed up successfully","data":{"id":"69163bc9f9847b24367a34d4"},"timestamp":"2025-11-13T20:12:57.956Z"}
+[REQUEST] 2025-11-13T20:13:17.636Z POST /api/users/login IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**"
+}
+[LOG] 2025-11-13T20:13:17.716Z User logged in successfully: 1223@gmail.com
+[RESPONSE] 2025-11-13T20:13:17.727Z POST /api/users/login Status: 200 Duration: 88ms Body: {"status":"succsss","message":"Login Sucessfull","data":{"email":"1223@gmail.com"},"timestamp":"2025-11-13T20:13:17.723Z"}
+[REQUEST] 2025-11-13T20:13:31.250Z POST /api/users/reset-passw IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**"
+}
+[REQUEST] 2025-11-13T20:13:35.928Z POST /api/users/reset-password IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**"
+}
+[ERROR] 2025-11-13T20:13:35.930Z Reset Password validate failed:  {
+  "0": {
+    "field": "confirmPassword",
+    "message": "Please confirm password."
+  }
+}
+[RESPONSE] 2025-11-13T20:13:35.935Z POST /api/users/reset-password Status: 400 Duration: 7ms Body: {"status":"error","message":"Reset Password validation failed","timestamp":"2025-11-13T20:13:35.934Z","errors":[{"field":"confirmPassword","message":"Please confirm password."}]}
+[REQUEST] 2025-11-13T20:14:05.563Z POST /api/users/reset-password IP:::1 Body: {
+  "email": "1223@gmail.com",
+  "password": "**HIDDEN FOR PRIVACY**",
+  "confirmPassword": "abcdef"
+}
+[LOG] 2025-11-13T20:14:05.720Z User password reset was successful: 1223@gmail.com
+[RESPONSE] 2025-11-13T20:14:05.724Z POST /api/users/reset-password Status: 200 Duration: 162ms Body: {"status":"succsss","message":"Reset Password Sucessfull","timestamp":"2025-11-13T20:14:05.723Z"}

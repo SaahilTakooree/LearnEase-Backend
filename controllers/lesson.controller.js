@@ -133,7 +133,7 @@ export const deleteLesson = async (request, response) => {
 
 
 // Controller function to handle request to add student to a lesson.
-export const addStudentTolesson = async (request, response) => {
+export const addStudentToLesson = async (request, response) => {
     try{
         // Validate if the lesson data being passed in is correct. If not validate send a bad request responce.
         const validation = validateAddStudent(request.body);
@@ -142,7 +142,7 @@ export const addStudentTolesson = async (request, response) => {
         }
 
         // Add the student to the lesson.
-        const updatedLesson = await LESSONSERVICE.addStudentTolesson(request.params.id, request.body.email);
+        const updatedLesson = await LESSONSERVICE.addStudentToLesson(request.params.id, request.body.email);
 
         // Send a success response.
         sendSuccess(response, updatedLesson, "Student added to lesson successfully.");
