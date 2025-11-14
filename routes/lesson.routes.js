@@ -36,4 +36,4 @@ lessonRouter.post("/enrolled", lessonController.getEnrolledLesson);
 
 
 // Export the router so it can be use in the main Express application.
-export default lessonRouter
+export default lessonRouter;

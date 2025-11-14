@@ -1,5 +1,4 @@
 // Import depencies.
-import { availableMemory } from "process";
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
 import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents. 
 
@@ -99,22 +98,55 @@ export class LessonService {
                 ? lesson.students.reduce((total, student) => total + (student.space || 0), 0)
                 : 0;
 
+            // Prepare temp variables if both are provided.
+            let newSpace = null;
+            let newAvaliableSpace = null;
+
             // Map all updated date to their correspondinf field.
             const updateFields = {};
 
             for (const [key, value] of Object.entries(updateData)) {
                 if (key === "space") {
-                    const newSpace = parseInt(value);
+                    newSpace = parseInt(value);
                     if (newSpace < bookedSpace) {
                         throw new Error(`Space cannot be less than the number of booked spaces: ${bookedSpace}`);
                     }
-                    updateFields.space = newSpace;
-                    updateFields.avaliableSpace = newSpace - bookedSpace;
+                    // updateFields.space = newSpace;
+                    // updateFields.avaliableSpace = newSpace - bookedSpace;
+                } else if (key === "avaliableSpace") {
+                    newAvaliableSpace = parseInt(value);
+                    if (newAvaliableSpace < 0) {
+                        throw new Error(`Avaliable space cannot be less than zero.`);
+                    }
+                    // updateFields.avaliableSpace = newAvaliableSpace;
+                    // updateFields.space = bookedSpace + newAvaliableSpace;
                 } else if (key === "price") {
                     updateFields.price = parseFloat(value);
                 } else {
                     updateFields[key] = value;
                 }
+            }
+
+            // Validate if there are confict when both space and availableSpace are provided.
+            if (newSpace !== null && newAvaliableSpace !== null) {
+                const expectedAvailable = newSpace - bookedSpace;
+                const expectedSpace = bookedSpace + newAvaliableSpace;
+
+                if (expectedAvailable !== newAvaliableSpace || expectedSpace !== newSpace) {
+                    throw new Error(`Invalid space/avaliableSpace combination. With bookedSpace = ${bookedSpace}, space=${newSpace} requires avaliableSpace=${expectedAvailable}, but got ${newAvaliableSpace}.`);
+                }
+
+                // If there are no conflict, can update data.
+                updateFields.space = newSpace;
+                updateFields.avaliableSpace = newAvaliableSpace;
+            }
+            // If only one the field is provided,
+            else if (newSpace !== null) {
+                updateFields.space = newSpace;
+                updateFields.avaliableSpace = newSpace - bookedSpace;
+            } else if (newAvaliableSpace !== null) {
+                updateFields.avaliableSpace = newAvaliableSpace;
+                updateFields.space = bookedSpace + newAvaliableSpace;
             }
             
             // Update the updated time at field.

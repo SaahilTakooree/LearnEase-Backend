@@ -13,7 +13,7 @@ function validateNumberField(fieldValue, fieldName, minimum = 0, errors) {
         errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required.` });
     // if field is number and is not less than min.
     } else if (isNaN(fieldValue) || parseInt(fieldValue) < minimum) {
-        errors.push({ field: price, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} must be  at least ${minimum}.` });
+        errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} must be  at least ${minimum}.` });
     }
 }
 
