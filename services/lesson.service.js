@@ -1,4 +1,5 @@
 // Import depencies.
+import { availableMemory } from "process";
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
 import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents. 
 
@@ -67,6 +68,7 @@ export class LessonService {
                 topic: lessonData.topic,
                 location: lessonData.location,
                 space: parseInt(lessonData.space),
+                avaliableSpace: parseInt(lessonData.space),
                 price: parseFloat(lessonData.price),
                 students: [],
                 createdBy: lessonData.createdBy,
@@ -86,19 +88,34 @@ export class LessonService {
 
 
     // Function to update a lesson data.
-    async updateLesson(id, updateDate) {
+    async updateLesson(id, updateData) {
         try {
             // Check if the lesson id is valid.
             const lessonId = this.validateId(id);
+            const lesson = await this.getLessonById(lessonId);
+
+            // Calculate total booked space by summing all students' space.
+            const bookedSpace = lesson.students
+                ? lesson.students.reduce((total, student) => total + (student.space || 0), 0)
+                : 0;
 
             // Map all updated date to their correspondinf field.
-            const updateFields = Object.fromEntries(
-                Object.entries(updateDate).map(([key, value]) => {
-                    if (key === "space") value = parseInt(value);
-                    if (key === "price") value = parseFloat(value);
-                    return [key, value];
-                })
-            );
+            const updateFields = {};
+
+            for (const [key, value] of Object.entries(updateData)) {
+                if (key === "space") {
+                    const newSpace = parseInt(value);
+                    if (newSpace < bookedSpace) {
+                        throw new Error(`Space cannot be less than the number of booked spaces: ${bookedSpace}`);
+                    }
+                    updateFields.space = newSpace;
+                    updateFields.avaliableSpace = newSpace - bookedSpace;
+                } else if (key === "price") {
+                    updateFields.price = parseFloat(value);
+                } else {
+                    updateFields[key] = value;
+                }
+            }
             
             // Update the updated time at field.
             updateFields.updatedAt = new Date();
@@ -149,7 +166,7 @@ export class LessonService {
 
 
     // Function to add a student to a lessons.
-    async addStudentToLesson(lessonId, studentEmail) {
+    async addStudentToLesson(lessonId, studentEmail, space = 1, session = null) {
         try {
             // Check if the lesson id is valid.
             const id = this.validateId(lessonId);
@@ -160,30 +177,60 @@ export class LessonService {
                 throw new Error("Lesson not found.");
             }
 
-            // Check if the student is already enrolled in this lesson.
-            if (lesson.students.some(student => student.email === studentEmail)) {
-                throw new Error ("Student is already enrolled in this lesson.");
-            }
-
             // Check if there is space in this lesson.
-            if (lesson.students.length >= lesson.space) {
+            if (lesson.avaliableSpace <= 0) {
                 throw new Error("No space Avaliable in this lesson.")
             }
 
-            // Update the lesson collection with new student.
-            const result = await this.collection.findOneAndUpdate(
-                { _id: id },
-                { 
-                    $push: { students: { email: studentEmail } },
-                    $set: { updatedAt: new Date() }
-                },
-                { returnDocument: 'after'}
-            );
+            // Check if there is enought space for the the amount of space being orders.
+            if (lesson.avaliableSpace < space) {
+                throw new Error("Space cannot be ordered lesson than the number of avaliable space.");
+            }
+
+            // Check if student already enrolled
+            const existingStudent = lesson.students.find(s => s.email === studentEmail);
+
+            // Variable to store the update data.
+            let updatedLesson
+
+            const options = { returnDocument: "after" };
+            if (session) options.session = session;
+
+            // if student allready exist, increse their space
+            if (existingStudent) {
+                updatedLesson = await this.collection.findOneAndUpdate(
+                    {
+                        _id: id,
+                        "students.email": studentEmail
+                    },
+                    {
+                        $inc: {
+                            "students.$.space": space,
+                            avaliableSpace: -space
+                        },
+                        $set: { updatedAt: new Date() }
+                    },
+                    options
+                );
+            } else {
+                // Update the lesson collection with new student.
+                updatedLesson = await this.collection.findOneAndUpdate(
+                    { _id: id },
+                    { 
+                        $push: { students: { email: studentEmail, space: space } },
+                        $set: {
+                            avaliableSpace: lesson.avaliableSpace - space,
+                            updatedAt: new Date()
+                        }
+                    },
+                    options
+                );
+            }
 
             console.log(`Add student to lesson with id: ${id}`);
 
             // Return lesson object.
-            return result
+            return updatedLesson;
         } catch (error) {
             console.error(`Error in adding student to lesson: ${lessonId}`, error);
             throw error;
@@ -192,7 +239,7 @@ export class LessonService {
 
 
     // Function to remove a student form a lesson.
-    async removeStudentFromLesson(lessonId, studentEmail) {
+    async removeStudentFromLesson(lessonId, studentEmail, space = 1) {
         try {
             // Check if the lesson id is valid.
             const id = this.validateId(lessonId);
@@ -206,12 +253,20 @@ export class LessonService {
                 throw new Error(`No student with this email is enrolled in this lesson: LessonID: ${lessonId}, email: ${studentEmail}`)
             }
 
+            // Check if space being add exceed the the number of space
+            if (lesson.space <= lesson.avaliableSpace + space) {
+                throw new Error("Space cannot be ordered lesson than the number of avaliable space.");
+            }
+
             // Remove student from lesson.
             const result = await this.collection.findOneAndUpdate(
                 { _id: id },
                 { 
                     $pull: { students: { email: studentEmail } },
-                    $set: { updatedAt: new Date() }
+                    $set: {
+                        avaliableSpace: lesson.avaliableSpace + space,
+                        updatedAt: new Date()
+                    }
                 },
                 { returnDocument: 'after'}
             );

@@ -72,6 +72,7 @@ export class OrderService {
 
             // Fetch all ordered lesson info.
             const lessonsInfo = [];
+
             for (const lesson of orderData.lessonsData) {
                 // Validat the lesson id then get its asscociated record.
                 const lessonID = this.validateId(lesson.id);
@@ -81,29 +82,24 @@ export class OrderService {
                 }
 
                 // Check if there is space left.
-                const availableSpace = lessonRecord.space - lessonRecord.students.length;
-                if (availableSpace < lesson.spaces) {
+                if (lessonRecord.availableSpace < lesson.spaces) {
                     throw new Error(
-                        `Not enough space in lesson "${lessonRecord.topic}" at ${lessonRecord.location}. Only ${availableSpace} space(s) left.`
+                        `Not enough space in lesson "${lessonRecord.topic}" at ${lessonRecord.location}. Only ${lessonRecord.availableSpace} space(s) left.`
                     );
                 }
-
-                // Calculate the space count.
-                const subTotal = lessonRecord.price * lesson.spaces;
-                totalPrice += subTotal;
-
-                // Update the space count.
-                await this.lessonService.updateLesson(lessonID, {
-                    space: lessonRecord.space - lesson.spaces
-                });
-
-                // Add the student to the lesson.
-                await this.lessonService.addStudentToLesson(lessonID, orderData.email);
 
                 lessonsInfo.push({
                     id: lessonID,
                     spaceBooked: lesson.spaces
                 });
+
+                // Calculate the space count.
+                totalPrice += lessonRecord.price * lesson.spaces;;
+            }
+
+            // If all checks pass, add students to lessons
+            for (const lesson of lessonsInfo) {
+                await this.lessonService.addStudentToLesson(lesson.id, orderData.email, lesson.spaceBooked, session);
             }
 
             // Insert the order.
@@ -114,7 +110,7 @@ export class OrderService {
                 lessons: lessonsInfo,
                 totalPrice,
                 createdAt: new Date()
-            });
+            }, { session });
 
             await session.commitTransaction();
             session.endSession();
@@ -125,6 +121,9 @@ export class OrderService {
             return await this.getOrdersById(result.insertedId.toString());
             
         } catch (error) {
+            console.info("Error. Reverting back changes.")
+            await session.abortTransaction();
+            session.endSession();
             console.error("Error in creating order.", error);
             throw error;
         }

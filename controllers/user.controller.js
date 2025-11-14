@@ -39,7 +39,7 @@ export const login = async (request, response) => {
         }
         
         // Handle general server errors.
-        sendError(response, "Login failed", 500);
+        sendError(response, error.message, 500);
     }
 }
 
@@ -74,7 +74,7 @@ export const signup = async (request, response) => {
         }
         
         // Handle general server errors.
-        sendError(response, "signup failed", 500);
+        sendError(response, error.message, 500);
     }
 }
 
@@ -109,6 +109,6 @@ export const resetPassword = async (request, response) => {
         }
         
         // Handle general server errors.
-        sendError(response, "Reset Password failed", 500);
+        sendError(response, error.message, 500);
     }
 }

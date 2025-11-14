@@ -19,7 +19,7 @@ export const getAllOrders = async (request, response) => {
         console.error("Failed to retrieve all orders", error)
 
         // Send an error responce.
-        sendError(response, "Failed to retrieve all orders", 500);
+        sendError(response, error.message, 500);
     }
 }
 
@@ -43,6 +43,6 @@ export const createOrder = async (request, response) => {
         console.error("Fail to create order", error);
 
         // Send an error responce.
-        sendError(response, "Failed to create order", 500);
+        sendError(response, error.message, 500);
     }
 }

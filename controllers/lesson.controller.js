@@ -19,7 +19,7 @@ export const getAllLessons = async (request, response) => {
         console.error("Failed to retrieve all lessons", error)
 
         // Send an error responce.
-        sendError(response, "Failed to retrieve all lessons", 500);
+        sendError(response, error.message, 500);
     }
 }
 
@@ -66,7 +66,7 @@ export const createLesson = async (request, response) => {
         console.error("Fail to create lesson", error);
 
         // Send an error responce.
-        sendError(response, "Failed to create lesson", 500);
+        sendError(response, error.message, 500);
     }
 }
 
@@ -86,14 +86,6 @@ export const updateLesson = async (request, response) => {
             return sendNotFound(response, `Lesson not found for update.`);
         }
 
-        // Check if new space is less that current number of student.
-        if (request.body.space !== undefined) {
-            const newSpace = parseInt(request.body.space);
-            if (lesson.students.length > newSpace) {
-                return sendBadRequest(res, `Space cannot be less than the number of enrolled students (${lesson.students.length}).`);
-            }
-        }
-
         // Update the data.
         const updatedLesson = await LESSONSERVICE.updateLesson(request.params.id, request.body);
 
@@ -104,7 +96,7 @@ export const updateLesson = async (request, response) => {
         console.error("Fail to update lesson", error);
 
         // Send an error responce.
-        sendError(response, "Failed to update lesson", 500);
+        sendError(response, `Failed to update lesson, ${error}`, 500);
     }
 }
 
@@ -142,7 +134,7 @@ export const addStudentToLesson = async (request, response) => {
         }
 
         // Add the student to the lesson.
-        const updatedLesson = await LESSONSERVICE.addStudentToLesson(request.params.id, request.body.email);
+        const updatedLesson = await LESSONSERVICE.addStudentToLesson(request.params.id, request.body.email, request.body.space);
 
         // Send a success response.
         sendSuccess(response, updatedLesson, "Student added to lesson successfully.");
