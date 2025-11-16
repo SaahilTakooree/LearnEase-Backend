@@ -1,4 +1,5 @@
 // Import depencies.
+import { error } from "console";
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
 import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents. 
 
@@ -67,7 +68,7 @@ export class LessonService {
                 topic: lessonData.topic,
                 location: lessonData.location,
                 space: parseInt(lessonData.space),
-                avaliableSpace: parseInt(lessonData.space),
+                availableSpace: parseInt(lessonData.space),
                 price: parseFloat(lessonData.price),
                 students: [],
                 createdBy: lessonData.createdBy,
@@ -100,63 +101,170 @@ export class LessonService {
 
             // Prepare temp variables if both are provided.
             let newSpace = null;
-            let newAvaliableSpace = null;
+            let newAvailableSpace = null;
+            let studentAction = null;
+            let email = null;
+            let space = null
 
             // Map all updated date to their correspondinf field.
             const updateFields = {};
 
+            // List of al fields that be updated.
+            const allowedFields = ["name", "description", "topic", "location", "space", "availableSpace", "price", "students", "createdBy", "createdAt", "updatedAt"];
+
             for (const [key, value] of Object.entries(updateData)) {
+                // check if key is allows to be modify.
+                if (!allowedFields.includes(key)) {
+                    throw new Error(`Field '${key}' is not a recognised field. Allowed fields are: ${allowedFields.join(", ")}`);
+                }
+
                 if (key === "space") {
                     newSpace = parseInt(value);
-                    if (newSpace < bookedSpace) {
-                        throw new Error(`Space cannot be less than the number of booked spaces: ${bookedSpace}`);
+                } else if (key === "availableSpace") {
+                    newAvailableSpace = parseInt(value);
+                    if (newAvailableSpace < 0) {
+                        throw new Error(`Available space cannot be less than zero.`);
                     }
-                    // updateFields.space = newSpace;
-                    // updateFields.avaliableSpace = newSpace - bookedSpace;
-                } else if (key === "avaliableSpace") {
-                    newAvaliableSpace = parseInt(value);
-                    if (newAvaliableSpace < 0) {
-                        throw new Error(`Avaliable space cannot be less than zero.`);
-                    }
-                    // updateFields.avaliableSpace = newAvaliableSpace;
-                    // updateFields.space = bookedSpace + newAvaliableSpace;
                 } else if (key === "price") {
                     updateFields.price = parseFloat(value);
+                } else if (key === "students") {
+                    // Get the action and student info from body.
+                    const { action, student } = value;
+
+                    // Validate action object
+                    if (!action || typeof action !== "string") {
+                        throw new Error("Invalid or missing 'action' field inside 'students'. Must be 'add' or 'remove'.");
+                    }
+
+                    studentAction = action.trim().toLowerCase();
+
+                    if (studentAction !== "add" && studentAction !== "remove") {
+                        throw new Error("Invalid 'action' value. Must be 'add' or 'remove'.");
+                    }
+
+                    // Validate student object
+                    if (!student) {
+                        throw new Error("Missing 'student' object inside 'students'. Must include email and optionally space.");
+                    }
+
+                    email = student.email;
+                    space = parseInt(student.space);
+
+                    if (!email) {
+                        throw new Error ("Missing 'email' field inside 'student' object.");
+                    }
+
+                    // Only require 'space' if adding a student.
+                    if (studentAction === "add" && !space ) {
+                        throw new Error("Missing 'space' field inside 'student' object.");
+                    // If Action is to remove a student.
+                    } else if (studentAction === "remove") {
+                        // Get the student record.
+                        const existingStudent = lesson.students.find(s => s.email === email);
+
+                        // If student record does not exist.
+                        if (!existingStudent) {
+                            throw new Error(`Student with email ${email} is not enrolled in lesson with id: ${lessonId}`);
+                        }
+
+                        space = existingStudent.space
+                    }
                 } else {
                     updateFields[key] = value;
                 }
             }
 
-            // Validate if there are confict when both space and availableSpace are provided.
-            if (newSpace !== null && newAvaliableSpace !== null) {
-                const expectedAvailable = newSpace - bookedSpace;
-                const expectedSpace = bookedSpace + newAvaliableSpace;
-
-                if (expectedAvailable !== newAvaliableSpace || expectedSpace !== newSpace) {
-                    throw new Error(`Invalid space/avaliableSpace combination. With bookedSpace = ${bookedSpace}, space=${newSpace} requires avaliableSpace=${expectedAvailable}, but got ${newAvaliableSpace}.`);
-                }
-
-                // If there are no conflict, can update data.
-                updateFields.space = newSpace;
-                updateFields.avaliableSpace = newAvaliableSpace;
-            }
-            // If only one the field is provided,
-            else if (newSpace !== null) {
-                updateFields.space = newSpace;
-                updateFields.avaliableSpace = newSpace - bookedSpace;
-            } else if (newAvaliableSpace !== null) {
-                updateFields.avaliableSpace = newAvaliableSpace;
-                updateFields.space = bookedSpace + newAvaliableSpace;
-            }
+            // Determine final booked space after action.
+            let futureBookedSpace = Number(bookedSpace);
+            let studentSpace = Number(space);
             
+            if (studentAction === "add") {
+                futureBookedSpace += studentSpace;
+            } else if (studentAction === "remove") {
+                futureBookedSpace -= studentSpace;
+            }
+
+            // Validate space vs booked space.
+            if (newSpace !== null && newSpace < futureBookedSpace) {
+                throw new Error(`Space cannot be less than the number of booked spaces after this operation: ${futureBookedSpace}.`);
+            }
+
+            // Determine final available space.
+            let finalAvailableSpace = null;
+            let finalSpace = null;
+
+            if (newSpace !== null && newAvailableSpace !== null) {
+                // Validate consistency.
+                finalSpace = newSpace;
+                finalAvailableSpace = newSpace - futureBookedSpace;
+                if (finalAvailableSpace !== newAvailableSpace) {
+                    throw new Error(`Invalid space/availableSpace combination. After action, expected availableSpace=${finalAvailableSpace}, but got ${newAvailableSpace}`);
+                }
+            } else if (newSpace !== null) {
+                // if only space is provided, calculate availableSpace.
+                finalSpace = newSpace;
+                finalAvailableSpace = newSpace - futureBookedSpace;
+            } else if (newAvailableSpace !== null) {
+                // If only avaliable space is provided, calculate space.
+                finalSpace = futureBookedSpace + newAvailableSpace;
+                finalAvailableSpace = newAvailableSpace;
+            } else if (studentAction !== null) {
+                // Student action but no explicit space/availableSpace, then recalculate based on current lesson space.
+                finalSpace = lesson.space;
+                finalAvailableSpace = lesson.space - futureBookedSpace;
+            }
+
+            // Validate adding student does not exceed lesson space.
+            const totalSpace = newSpace !== null ? newSpace : lesson.space;
+            if (studentAction === "add" && futureBookedSpace > totalSpace) {
+                throw new Error(`Cannot add student. Requested space (${studentSpace}) exceeds available space (${totalSpace - bookedSpace}).`);
+            }
+
+            // Only assign space/availableSpace to updateFields if they were calculated.
+            if (finalSpace !== null) {
+                updateFields.space = finalSpace;
+            }
+            if (finalAvailableSpace !== null) {
+                updateFields.availableSpace = finalAvailableSpace;
+            }
+
             // Update the updated time at field.
             updateFields.updatedAt = new Date();
 
             // Update the lesson collection.
             const result = await this.collection.findOneAndUpdate(
                 { _id: lessonId },
-                { $set: updateFields },
-                { returnDocument: 'after'}
+                {
+                    $set: {
+                        ...updateFields,
+                        // Update the students array.
+                        students: (() => {
+                            // Clone existing students array or empty if none.
+                            const currentStudents = Array.isArray(lesson.students) ? [...lesson.students] : [];
+
+                            if (studentAction === "add" && email) {
+                                // Check if student already exists.
+                                const existing = currentStudents.find(s => s.email === email);
+                                if (existing) {
+                                    // Increment space if student exists.
+                                    existing.space = Number(existing.space) + Number(space);
+                                } else {
+                                    // Add new student.
+                                    currentStudents.push({ email, space: Number(space) });
+                                }
+                            } else if (studentAction === "remove" && email) {
+                                // Remove student from array.
+                                const index = currentStudents.findIndex(s => s.email === email);
+                                if (index > -1) {
+                                    currentStudents.splice(index, 1);
+                                }
+                            }
+
+                            return currentStudents;
+                        })()
+                    },
+                },
+                { returnDocument: 'after' }
             );
 
             console.log(`Update lesson with id: ${lessonId}`);
@@ -194,124 +302,6 @@ export class LessonService {
             throw error;
         }
         
-    }
-
-
-    // Function to add a student to a lessons.
-    async addStudentToLesson(lessonId, studentEmail, space = 1, session = null) {
-        try {
-            // Check if the lesson id is valid.
-            const id = this.validateId(lessonId);
-
-            // Check if the lesson exist.
-            const lesson = await this.getLessonById(id);
-            if (!lesson) {
-                throw new Error("Lesson not found.");
-            }
-
-            // Check if there is space in this lesson.
-            if (lesson.avaliableSpace <= 0) {
-                throw new Error("No space Avaliable in this lesson.")
-            }
-
-            // Check if there is enought space for the the amount of space being orders.
-            if (lesson.avaliableSpace < space) {
-                throw new Error("Space cannot be ordered lesson than the number of avaliable space.");
-            }
-
-            // Check if student already enrolled
-            const existingStudent = lesson.students.find(s => s.email === studentEmail);
-
-            // Variable to store the update data.
-            let updatedLesson
-
-            const options = { returnDocument: "after" };
-            if (session) options.session = session;
-
-            // if student allready exist, increse their space
-            if (existingStudent) {
-                updatedLesson = await this.collection.findOneAndUpdate(
-                    {
-                        _id: id,
-                        "students.email": studentEmail
-                    },
-                    {
-                        $inc: {
-                            "students.$.space": space,
-                            avaliableSpace: -space
-                        },
-                        $set: { updatedAt: new Date() }
-                    },
-                    options
-                );
-            } else {
-                // Update the lesson collection with new student.
-                updatedLesson = await this.collection.findOneAndUpdate(
-                    { _id: id },
-                    { 
-                        $push: { students: { email: studentEmail, space: space } },
-                        $set: {
-                            avaliableSpace: lesson.avaliableSpace - space,
-                            updatedAt: new Date()
-                        }
-                    },
-                    options
-                );
-            }
-
-            console.log(`Add student to lesson with id: ${id}`);
-
-            // Return lesson object.
-            return updatedLesson;
-        } catch (error) {
-            console.error(`Error in adding student to lesson: ${lessonId}`, error);
-            throw error;
-        }   
-    }
-
-
-    // Function to remove a student form a lesson.
-    async removeStudentFromLesson(lessonId, studentEmail, space = 1) {
-        try {
-            // Check if the lesson id is valid.
-            const id = this.validateId(lessonId);
-
-            // Check if student is enrolled in that lesson.
-            const lesson = await this.collection.findOne({ 
-                _id: id, 
-                "students.email": studentEmail 
-            });
-            if (!lesson) {
-                throw new Error(`No student with this email is enrolled in this lesson: LessonID: ${lessonId}, email: ${studentEmail}`)
-            }
-
-            // Check if space being add exceed the the number of space
-            if (lesson.space <= lesson.avaliableSpace + space) {
-                throw new Error("Space cannot be ordered lesson than the number of avaliable space.");
-            }
-
-            // Remove student from lesson.
-            const result = await this.collection.findOneAndUpdate(
-                { _id: id },
-                { 
-                    $pull: { students: { email: studentEmail } },
-                    $set: {
-                        avaliableSpace: lesson.avaliableSpace + space,
-                        updatedAt: new Date()
-                    }
-                },
-                { returnDocument: 'after'}
-            );
-            
-            console.log(`Student remove from lesson: ${id}`);
-
-            // Return the updated lesson object.
-            return result
-        } catch (error) {
-            console.error(`Error in remove student from lesson: ${lessonId}`, error);
-            throw error;
-        }
-            
     }
 
 

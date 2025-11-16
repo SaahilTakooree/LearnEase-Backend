@@ -1,6 +1,6 @@
 // Import dependencies.
 import { LessonService } from "../services/lesson.service.js"; // Import the 'LessonService' class to handle lesson related operation.
-import { validateCreateLesson, validateUpdateLesson, validateAddStudent, validateRemoveStudent } from "../validators/lesson.validator.js"; // Import validation function to validate request.
+import { validateCreateLesson, validateUpdateLesson, validationForTeacher, validationForEnrolled } from "../validators/lesson.validator.js"; // Import validation function to validate request.
 import { sendSuccess, sendCreated, sendBadRequest, sendNotFound, sendError } from "../utils/response.js"; // Import utility function to send formatted HTTP responses.
 
 
@@ -74,8 +74,16 @@ export const createLesson = async (request, response) => {
 // Controller function to the update of lesson request.
 export const updateLesson = async (request, response) => {
     try{
+        // Get the updateData from the body.
+        const updateData = request.body;
+
+        // Check if the updateData is empty.
+        if (!updateData || Object.keys(updateData).length === 0) {
+            return sendBadRequest(response, "No data provided to update.");
+        }
+
         // Validate if the lesson data being passed in is correct. If not validate send a bad request responce.
-        const validation = validateUpdateLesson(request.body);
+        const validation = validateUpdateLesson(updateData);
         if (!validation.isValid) {
             return sendBadRequest(response, "Lesson validation failed", validation.errors);
         }
@@ -87,7 +95,7 @@ export const updateLesson = async (request, response) => {
         }
 
         // Update the data.
-        const updatedLesson = await LESSONSERVICE.updateLesson(request.params.id, request.body);
+        const updatedLesson = await LESSONSERVICE.updateLesson(request.params.id, updateData);
 
         // Send a success response.
         sendSuccess(response, updatedLesson, "Lesson updated successfully.");
@@ -124,62 +132,15 @@ export const deleteLesson = async (request, response) => {
 }
 
 
-// Controller function to handle request to add student to a lesson.
-export const addStudentToLesson = async (request, response) => {
-    try{
-        // Validate if the lesson data being passed in is correct. If not validate send a bad request responce.
-        const validation = validateAddStudent(request.body);
-        if (!validation.isValid) {
-            return sendBadRequest(response, "Add student validation failed", validation.errors);
-        }
-
-        // Add the student to the lesson.
-        const updatedLesson = await LESSONSERVICE.addStudentToLesson(request.params.id, request.body.email, request.body.space);
-
-        // Send a success response.
-        sendSuccess(response, updatedLesson, "Student added to lesson successfully.");
-    } catch (error) {
-        // Log any errors that occurs during the addition of student to a lesson.
-        console.error("Fail to add student to a lesson", error);
-
-        // Send an not found responce.
-        if (error.message === "Lesson not found.") {
-            return sendNotFound(response, "Lesson not found to add student.");
-        }
-
-        // Send an error responce.
-        sendError(response, error.message, 400);
-    }
-}
-
-
-// Controller function to handle request to remove student from a lesson.
-export const removeStudentFromLesson = async (request, response) => {
-    try{
-        // Validate if the lesson data being passed in is correct. If not validate send a bad request responce.
-        const validation = validateRemoveStudent(request.body);
-        if (!validation.isValid) {
-            return sendBadRequest(request, "Remove student validation failed.", validation.errors);
-        }
-
-        // Remove the student from the lesson.
-        const updatedLesson = await LESSONSERVICE.removeStudentFromLesson(request.params.id, request.body.email);
-        
-        // Send a success response.
-        sendSuccess(response, updatedLesson, "Student removed from lesson successfully.");
-    } catch (error) {
-        // Log any errors that occurs during removal of student from a lesson.
-        console.erro("Fail to remove student from a lesson", error);
-
-        // Send an error responce.
-        sendError(response, error.message, 400);
-    }
-}
-
-
 // Controller function to get the lessons that someone taught.
 export const getLessonByTeacher = async (request, response) => {
     try{
+        // Validate if the email being passed in is valid. If not validate send a bad request responce.
+        const validation = validationForTeacher(request.body);
+        if (!validation.isValid) {
+            return sendBadRequest(response, "Email validation failed.", validation.errors);
+        }
+
         // Get all lessons that someone teaches.
         const lessons = await LESSONSERVICE.getLessonByTeacher(request.body.email);
 
@@ -198,6 +159,12 @@ export const getLessonByTeacher = async (request, response) => {
 // Controller function to get the lessons that someone is enrolled in.
 export const getEnrolledLesson = async (request, response) => {
     try{
+        // Validate if the email being passed in is valid. If not validate send a bad request responce.
+        const validation = validationForEnrolled(request.body);
+        if (!validation.isValid) {
+            return sendBadRequest(response, "Email validation failed.", validation.errors);
+        }
+
         // Get all lessons that someone is enrolled in
         const lessons = await LESSONSERVICE.getEnrolledLesson(request.body.email);
 

@@ -84,7 +84,7 @@ export class OrderService {
                 // Check if there is space left.
                 if (lessonRecord.availableSpace < lesson.spaces) {
                     throw new Error(
-                        `Not enough space in lesson "${lessonRecord.topic}" at ${lessonRecord.location}. Only ${lessonRecord.availableSpace} space(s) left.`
+                        `Not enough space in lesson ${lessonRecord.topic}. Only ${lessonRecord.availableSpace} space(s) left.`
                     );
                 }
 
@@ -95,11 +95,6 @@ export class OrderService {
 
                 // Calculate the space count.
                 totalPrice += lessonRecord.price * lesson.spaces;;
-            }
-
-            // If all checks pass, add students to lessons
-            for (const lesson of lessonsInfo) {
-                await this.lessonService.addStudentToLesson(lesson.id, orderData.email, lesson.spaceBooked, session);
             }
 
             // Insert the order.

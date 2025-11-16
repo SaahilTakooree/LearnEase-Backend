@@ -28,9 +28,32 @@ function validateStudentEmail(email, errors) {
     }
 }
 
+// function to validate students field.
+function validateStudents(students = {}, errors) {
+    // Validate "action".
+    if (!students.action || !["add", "remove"].includes(students.action)) {
+        errors.push({ field: "students.action", message: "Object 'action' is required. Action must be either 'add' or 'remove'." });
+    }
+
+    // Validate "student" object.
+    if (!students.student || typeof students.student !== "object") {
+        errors.push({ field: "students.student", message: "Object 'student' is required." });
+    } else {
+        const student = students.student;
+
+        // Validate student email.
+        validateStudentEmail(student.email, errors);
+
+        // Validate student space only if action is add
+        if (students.action === "add") {
+            validateNumberField(student.space, "space", 1, errors);
+        }
+    }
+}
+
 
 // Function to validate create lesson data.
-export function validateCreateLesson(data) {
+export function validateCreateLesson(data = {}) {
     const errors = [];
 
     // Validate data.
@@ -40,6 +63,7 @@ export function validateCreateLesson(data) {
     validateStringField(data.location, "location", errors);
     validateNumberField(data.space, "space", 5, errors);
     validateNumberField(data.price, "price", 0, errors);
+    validateStudentEmail(data.createdBy, errors);
 
     // Return a validation result object.
     return {
@@ -49,7 +73,7 @@ export function validateCreateLesson(data) {
 }
 
 // Function to validate update lesson data.
-export function validateUpdateLesson(data) {
+export function validateUpdateLesson(data = {}) {
     const errors = [];
 
     // Validate data.
@@ -73,8 +97,20 @@ export function validateUpdateLesson(data) {
         validateNumberField(data.space, "space", 5, errors);
     }
 
+    if (data.availableSpace !== undefined) {
+        validateNumberField(data.availableSpace, "availableSpace", 0, errors);
+    }
+
     if (data.price !== undefined) {
         validateNumberField(data.price, "price", 0, errors);
+    }
+
+    if (data.students !== undefined) {
+        validateStudents(data.students, errors);
+    }
+
+    if (data.createdBy !== undefined) {
+        validateStudentEmail(data.createdBy, errors);
     }
     
     // Return a validation result object.
@@ -84,11 +120,11 @@ export function validateUpdateLesson(data) {
     };
 }
 
-// Function to add validate add lesson data.
-export function validateAddStudent(data){
+// Function to validate email for getTeacher.
+export function validationForTeacher(data = {}) {
     const errors = [];
 
-    // Validate data.
+    // Validate email.
     validateStudentEmail(data.email, errors);
 
     // Return a validation object.
@@ -98,11 +134,11 @@ export function validateAddStudent(data){
     };
 }
 
-// Function to remove validate remove lesson data.
-export function validateRemoveStudent(data) {
+// Function to validate email for getEnrolled.
+export function validationForEnrolled(data = {}) {
     const errors = [];
 
-    // Validate data.
+    // Validate email.
     validateStudentEmail(data.email, errors);
 
     // Return a validation object.

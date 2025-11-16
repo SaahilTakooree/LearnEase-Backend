@@ -48,12 +48,12 @@ function validateEmail(email, errors) {
 
 
 // Function to validate create order data.
-export function validateCreateOrder(data) {
+export function validateCreateOrder(data = {}) {
     const errors = [];
     
     // Validate data.
     validateStringField(data.name, "name", errors);
-    validatePhoneNumber(data.phone, "phone", errors);
+    validatePhoneNumber(data.phone, errors);
     validateLessonsData(data.lessonsData, errors);
     validateEmail(data.email, errors);
 

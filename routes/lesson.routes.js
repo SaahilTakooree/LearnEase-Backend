@@ -7,14 +7,27 @@ import * as lessonController from "../controllers/lesson.controller.js"; // Impo
 const lessonRouter = express.Router();
 
 
+// Static routes.
+
+// Get a lessons taught be a teacher.
+lessonRouter.get("/taught", lessonController.getLessonByTeacher);
+
+// Get a lessons a student is enrolled in.
+lessonRouter.get("/enrolled", lessonController.getEnrolledLesson);
+
+
+// CRUD routes. 
 // Get all lesson.
 lessonRouter.get("/", lessonController.getAllLessons);
 
-// Get a specific lesson.
-lessonRouter.get("/:id", lessonController.getLessonByID);
-
 // Create a new lesson.
 lessonRouter.post("/", lessonController.createLesson);
+
+
+// Dynamic routes.
+
+// Get a specific lesson.
+lessonRouter.get("/:id", lessonController.getLessonByID);
 
 // Update an existing lesson.
 lessonRouter.put("/:id", lessonController.updateLesson);
@@ -22,18 +35,6 @@ lessonRouter.put("/:id", lessonController.updateLesson);
 // Delete a lesson.
 lessonRouter.delete("/:id", lessonController.deleteLesson);
 
-// Add a student to a lesson.
-lessonRouter.post("/:id/add-student", lessonController.addStudentToLesson);
-
-// Remove a student from a lesson.
-lessonRouter.post("/:id/remove-student", lessonController.removeStudentFromLesson);
-
-// Get a lessons taught be a teacher.
-lessonRouter.post("/taught", lessonController.getLessonByTeacher);
-
-// Get a lessons a student is enrolled in.
-lessonRouter.post("/enrolled", lessonController.getEnrolledLesson);
-
 
 // Export the router so it can be use in the main Express application.
-export default lessonRouter;
+export default lessonRouter; 

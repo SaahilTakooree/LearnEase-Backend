@@ -23,7 +23,7 @@ export class SearchService {
                     { location : regex },
                     { price : { $regex : regex } },
                     { space : regex },
-                    { avaliableSpace : regex }   
+                    { availableSpace : regex }   
                 ]
             }).toArray();
 

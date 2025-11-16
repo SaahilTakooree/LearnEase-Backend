@@ -1,0 +1,74 @@
+[LOG] 2025-11-16T00:00:18.336Z Server is running on port 6969.
+[REQUEST] 2025-11-16T00:00:29.336Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "remove",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:00:29.349Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 22ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:00:29.344Z","errors":[{"field":"students.action","message":"Object 'action' is required. Action must be either 'add' or 'remove'."},{"field":"students.student","message":"Object 'student' is required."}]}
+[REQUEST] 2025-11-16T00:00:45.126Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "remove",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:00:45.133Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 12ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:00:45.131Z","errors":[{"field":"students.action","message":"Object 'action' is required. Action must be either 'add' or 'remove'."},{"field":"students.student","message":"Object 'student' is required."}]}
+[REQUEST] 2025-11-16T00:01:07.812Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "remove",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:01:07.854Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 35ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:01:07.846Z","errors":[{"field":"students.action","message":"Object 'action' is required. Action must be either 'add' or 'remove'."},{"field":"students.student","message":"Object 'student' is required."}]}
+[LOG] 2025-11-16T00:06:57.351Z Server is running on port 6969.
+[REQUEST] 2025-11-16T00:07:07.322Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "remove",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:07:07.330Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 10ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:07:07.328Z","errors":[{"field":"email","message":"Email is required."},{"field":"space","message":"Space is required."}]}
+[LOG] 2025-11-16T00:09:24.018Z Server is running on port 6969.
+[REQUEST] 2025-11-16T00:09:28.275Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "remove",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:09:28.298Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 20ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:09:28.290Z","errors":[{"field":"email","message":"Email is required."}]}
+[REQUEST] 2025-11-16T00:09:46.215Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": " add",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:09:46.222Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 4ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:09:46.218Z","errors":[{"field":"students.action","message":"Object 'action' is required. Action must be either 'add' or 'remove'."},{"field":"email","message":"Email is required."}]}
+[REQUEST] 2025-11-16T00:09:55.403Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "students": {
+    "action": "add",
+    "student": {}
+  }
+}
+[RESPONSE] 2025-11-16T00:09:55.405Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 3ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:09:55.405Z","errors":[{"field":"email","message":"Email is required."},{"field":"space","message":"Space is required."}]}
+[LOG] 2025-11-16T00:11:01.683Z Server is running on port 6969.
+[LOG] 2025-11-16T00:11:57.539Z Server is running on port 6969.
+[REQUEST] 2025-11-16T00:12:18.599Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "availableSpace": -1
+}
+[RESPONSE] 2025-11-16T00:12:18.615Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 19ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:12:18.612Z","errors":[{"field":"availableSpace","message":"AvailableSpace must be  at least 0."}]}
+[REQUEST] 2025-11-16T00:12:44.185Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "createdby": "123"
+}
+[LOG] 2025-11-16T00:12:44.271Z Getting lesson with id: 69190a021c8982561c494226
+[LOG] 2025-11-16T00:12:44.371Z Getting lesson with id: 69190a021c8982561c494226
+[ERROR] 2025-11-16T00:12:46.086Z Error in updating lesson with id: 69190a021c8982561c494226
+[ERROR] 2025-11-16T00:12:46.118Z Fail to update lesson {}
+[RESPONSE] 2025-11-16T00:12:46.168Z PUT /api/lessons/69190a021c8982561c494226 Status: 500 Duration: 1981ms Body: {"status":"error","message":"Failed to update lesson, Error: Field 'createdby' is not a recognised field. Allowed fields are: name, description, topic, location, space, availableSpace, price, students, createdBy, createdAt, updatedAt","timestamp":"2025-11-16T00:12:46.164Z"}
+[REQUEST] 2025-11-16T00:12:56.213Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "createdBy": "123"
+}
+[RESPONSE] 2025-11-16T00:12:56.222Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 9ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:12:56.221Z","errors":[{"field":"email","message":"Invalid email format."}]}
+[REQUEST] 2025-11-16T00:13:03.498Z PUT /api/lessons/69190a021c8982561c494226 IP:::1 Body: {
+  "createdBy": ""
+}
+[RESPONSE] 2025-11-16T00:13:03.504Z PUT /api/lessons/69190a021c8982561c494226 Status: 400 Duration: 6ms Body: {"status":"error","message":"Lesson validation failed","timestamp":"2025-11-16T00:13:03.503Z","errors":[{"field":"email","message":"Email is required."}]}

@@ -1,5 +1,5 @@
 // Function to add validate query.
-export function validateSearchQuery(query) {
+export function validateSearchQuery(query = "") {
     const errors = [];
 
     // Check to see if there is not query or is empty.

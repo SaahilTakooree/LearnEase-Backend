@@ -33,7 +33,7 @@ function validateConfirmPassword(password, confirmPassword, errors) {
 
 
 // Function to validate login data.
-export function validateLogin(data) {
+export function validateLogin(data = {}) {
     const errors = []
     
     // Validate email and password for login.
@@ -48,7 +48,7 @@ export function validateLogin(data) {
 }
 
 // Function to validate signup data.
-export function validateSignup(data) {
+export function validateSignup(data = {}) {
     const errors = []
     
     // Validate email, password and confirm password for signup.
@@ -64,7 +64,7 @@ export function validateSignup(data) {
 }
 
 // Function to validate reset password data.
-export function validateResetPassword(data) {
+export function validateResetPassword(data = {}) {
     const errors = []
     
     // Validate email, password and confirm password for password reset.

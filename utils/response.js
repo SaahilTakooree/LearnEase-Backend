@@ -43,7 +43,7 @@ export function sendBadRequest(responce, message = 'Bad request', errors = null)
 
 
 // Sends a 401 Unauthorised response.
-export function sendUnauthorized(responce, message = 'Unauthorized') {
+export function sendUnauthorised(responce, message = 'Unauthorised') {
     return sendError(responce, message, 401);
 }
 
