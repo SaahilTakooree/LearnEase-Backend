@@ -1,10 +1,6 @@
-// Function to validate a string field.
-function validateStringField(fieldValue, fieldName, errors) {
-    // Check if field is missing or empty.
-    if (!fieldValue || fieldValue.trim() === "") {
-        errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required.`})
-    }
-}
+// Import helper function.
+import { validateStringField, validateEmailField } from "../utils/validationHelper.js";
+
 
 // Function to validate a phone number.
 function validatePhoneNumber(phone, errors) {
@@ -35,17 +31,6 @@ function validateLessonsData(lessonsData, errors) {
     }
 }
 
-// Function to validate the email field.
-function validateEmail(email, errors) {
-    // Check if email is missing or empty.
-    if (!email || email.trim() === "") {
-        errors.push({field: "email", message: "Email is required."});
-    // Check if email format is invalid using a regex pattern.
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.push({ field: 'email', message: "Invalid email format." });
-    }
-}
-
 
 // Function to validate create order data.
 export function validateCreateOrder(data = {}) {
@@ -55,7 +40,7 @@ export function validateCreateOrder(data = {}) {
     validateStringField(data.name, "name", errors);
     validatePhoneNumber(data.phone, errors);
     validateLessonsData(data.lessonsData, errors);
-    validateEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
 
     // Return a validation objects.
     return {

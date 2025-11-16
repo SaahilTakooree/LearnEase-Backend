@@ -1,32 +1,6 @@
-// Function to validate a string field.
-function validateStringField(fieldValue, fieldName, errors) {
-    // Check if field is missing or empty.
-    if (!fieldValue || fieldValue.toString().trim() === "") {
-        errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required.`})
-    }
-}
+// Import helper functions.
+import { validateStringField, validateNumberField, validateEmailField } from "../utils/validationHelper.js"
 
-// Function to validate a number field.
-function validateNumberField(fieldValue, fieldName, minimum = 0, errors) {
-    // Check if field is missing or empty.
-    if (fieldValue == null || fieldValue === "") {
-        errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required.` });
-    // if field is number and is not less than min.
-    } else if (isNaN(fieldValue) || parseInt(fieldValue) < minimum) {
-        errors.push({ field: fieldName, message: `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} must be  at least ${minimum}.` });
-    }
-}
-
-// Function to validate the email field.
-function validateStudentEmail(email, errors) {
-    // Check if email is missing or empty.
-    if (!email || email.trim() === "") {
-        errors.push({field: "email", message: "Email is required."});
-    // Check if email format is invalid using a regex pattern.
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.push({ field: 'email', message: "Invalid email format." });
-    }
-}
 
 // Function to validate image.
 function validateImage(image, errors) {
@@ -65,7 +39,7 @@ function validateStudents(students = {}, errors) {
         const student = students.student;
 
         // Validate student email.
-        validateStudentEmail(student.email, errors);
+        validateEmailField(student.email, "email", errors);
 
         // Validate student space only if action is add
         if (students.action === "add") {
@@ -86,7 +60,7 @@ export function validateCreateLesson(data = {}) {
     validateStringField(data.location, "location", errors);
     validateNumberField(data.space, "space", 5, errors);
     validateNumberField(data.price, "price", 0, errors);
-    validateStudentEmail(data.createdBy, errors);
+    validateEmailField(data.createdBy, "createdBy", errors);
     if (data.image !== undefined) {
         validateImage(data.image, errors);
     }
@@ -136,7 +110,7 @@ export function validateUpdateLesson(data = {}) {
     }
 
     if (data.createdBy !== undefined) {
-        validateStudentEmail(data.createdBy, errors);
+        validateEmailField(data.createdBy, "createdBy", errors);
     }
 
     if (data.image !== undefined) {
@@ -155,7 +129,7 @@ export function validationForTeacher(data = {}) {
     const errors = [];
 
     // Validate email.
-    validateStudentEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
 
     // Return a validation object.
     return {
@@ -169,7 +143,7 @@ export function validationForEnrolled(data = {}) {
     const errors = [];
 
     // Validate email.
-    validateStudentEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
 
     // Return a validation object.
     return {

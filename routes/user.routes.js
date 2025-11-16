@@ -14,7 +14,7 @@ userRouter.post("/login", userController.login);
 userRouter.post("/signup", userController.signup);
 
 // Define a POST route for user reset-password.
-userRouter.post("/reset-password", userController.resetPassword);
+userRouter.put("/reset-password", userController.resetPassword);
 
 
 // Export the router so it can be use in the main Express application.

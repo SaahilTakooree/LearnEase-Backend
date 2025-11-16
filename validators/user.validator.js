@@ -1,13 +1,6 @@
-// Function to validate the email field.
-function validateEmail(email, errors) {
-    // Check if email is missing or empty.
-    if (!email || email.trim() === "") {
-        errors.push({field: "email", message: "Email is required."});
-    // Check if email format is invalid using a regex pattern.
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.push({ field: 'email', message: "Invalid email format." });
-    }
-}
+// Import helper function.
+import { validateEmailField } from "../utils/validationHelper.js";
+
 
 // Functin to vlidate the password field.
 function validatePassword(password, errors) {
@@ -37,7 +30,7 @@ export function validateLogin(data = {}) {
     const errors = []
     
     // Validate email and password for login.
-    validateEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
     validatePassword(data.password, errors);
 
     // Return a validation result object.
@@ -52,7 +45,7 @@ export function validateSignup(data = {}) {
     const errors = []
     
     // Validate email, password and confirm password for signup.
-    validateEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
     validatePassword(data.password, errors);
     validateConfirmPassword(data.password, data.confirmPassword, errors);
 
@@ -68,7 +61,7 @@ export function validateResetPassword(data = {}) {
     const errors = []
     
     // Validate email, password and confirm password for password reset.
-    validateEmail(data.email, errors);
+    validateEmailField(data.email, "email", errors);
     validatePassword(data.password, errors);
     validateConfirmPassword(data.password, data.confirmPassword, errors);
 
