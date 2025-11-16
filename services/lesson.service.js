@@ -1,7 +1,7 @@
 // Import depencies.
-import { error } from "console";
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
-import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents. 
+import { UserService } from "./user.service.js";
+import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents.
 
 
 export class LessonService {
@@ -9,6 +9,7 @@ export class LessonService {
     // Initialise the LESSONS collections to perform database operations.
     constructor() {
         this.collection = getCollection(COLLECTIONS.LESSONS);
+        this.userService = new UserService();
     }
 
 
@@ -60,6 +61,13 @@ export class LessonService {
     // Function to create a new lesson.
     async createLesson(lessonData) {
         try {
+            // if created by lesson createdby is provided.. check it that user exist.
+            if (lessonData.createdBy) {
+                const user = await this.userService.findByEmail(lessonData.createdBy);
+                if (!user) {
+                    throw new Error(`User with email ${lessonData.createdBy} does not exist.`);
+                }
+            }
 
             // Insert new lesson to the lesson collection.
             const result = await this.collection.insertOne({
@@ -71,7 +79,7 @@ export class LessonService {
                 availableSpace: parseInt(lessonData.space),
                 price: parseFloat(lessonData.price),
                 students: [],
-                image: `images/lessons/${lessonData.image}` || "`images/lessons/other.jpeg",
+                image: lessonData.image ? `/images/lessons/${lessonData.image}` : "/images/lessons/other.jpeg",
                 createdBy: lessonData.createdBy,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -128,6 +136,12 @@ export class LessonService {
                     }
                 } else if (key === "price") {
                     updateFields.price = parseFloat(value);
+                } else if (key === "createdBy") {
+                    // if lesson createdby is provided.. check it that user exist.
+                    const user = await this.userService.findByEmail(value);
+                    if (!user) {
+                        throw new Error(`User with email ${value} does not exist.`);
+                    }
                 } else if (key === "students") {
                     // Get the action and student info from body.
                     const { action, student } = value;

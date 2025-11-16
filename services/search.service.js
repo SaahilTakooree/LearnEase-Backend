@@ -14,18 +14,22 @@ export class SearchService {
     async searchLesson(keyword) {
         try {
             const regex = new RegExp(keyword, "i");
+                const query = [
+                { name: regex },
+                { description: regex },
+                { topic: regex },
+                { location: regex }
+            ];
 
-            const results = await this.lessonCollection.find({
-                $or : [
-                    { name : regex },
-                    { description : regex },
-                    { topic : regex },
-                    { location : regex },
-                    { price : { $regex : regex } },
-                    { space : regex },
-                    { availableSpace : regex }   
-                ]
-            }).toArray();
+            // If keyword is a number, also search numeric fields.
+            if (!isNaN(keyword)) {
+                const numKeyword = Number(keyword);
+                query.push({ price: numKeyword });
+                query.push({ space: numKeyword });
+                query.push({ availableSpace: numKeyword });
+            }
+
+            const results = await this.lessonCollection.find({ $or: query }).toArray();
 
             console.log(`Search: '${keyword}'. returned ${results.length} results.`);
 

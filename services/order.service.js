@@ -1,7 +1,8 @@
 // Import dependencies.
 import { getCollection, COLLECTIONS } from "../config/database.js"; // Import helper function to access the database and collections.
 import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents
-import { LessonService } from "./lesson.service.js"; // Import orders service to access the orders service.
+import { UserService } from "./user.service.js"; // Import user service to access the users service.
+import { LessonService } from "./lesson.service.js"; // Import lesson service to access the lessons service.
 
 
 export class OrderService {
@@ -9,6 +10,7 @@ export class OrderService {
     // Initialise the ORDER collections to perform database operations and orders service.
     constructor() {
         this.collection = getCollection(COLLECTIONS.ORDERS);
+        this.userService = new UserService()
         this.lessonService = new LessonService()
     }
 
@@ -69,6 +71,14 @@ export class OrderService {
 
         try {
             session.startTransaction();
+
+            // if email is provided.. check it that user exist.
+            if (orderData.email) {
+                const user = await this.userService.findByEmail(orderData.email);
+                if (!user) {
+                    throw new Error(`User with email ${orderData.email} does not exist.`);
+                }
+            }
 
             // Fetch all ordered lesson info.
             const lessonsInfo = [];
