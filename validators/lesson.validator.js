@@ -28,7 +28,30 @@ function validateStudentEmail(email, errors) {
     }
 }
 
-// function to validate students field.
+// Function to validate image.
+function validateImage(image, errors) {
+    // List of image allowed
+    const allowedImages = [
+        "art.jpeg",
+        "biology.jpeg",
+        "chemistry.jpeg",
+        "computer.jpeg",
+        "default.jpeg",
+        "english.jpeg",
+        "history.jpeg",
+        "math.jpeg",
+        "music.jpeg",
+        "pe.jpeg",
+        "physics.jpeg"
+    ];
+
+    // Validate image.
+    if (typeof image !== "string" || !allowedImages.includes(image)) {
+        errors.push({ field: "image", message: `Invalid image. Must be one of: ${allowedImages.join(", ")}.` });
+    }
+}
+
+// Function to validate students field.
 function validateStudents(students = {}, errors) {
     // Validate "action".
     if (!students.action || !["add", "remove"].includes(students.action)) {
@@ -64,6 +87,9 @@ export function validateCreateLesson(data = {}) {
     validateNumberField(data.space, "space", 5, errors);
     validateNumberField(data.price, "price", 0, errors);
     validateStudentEmail(data.createdBy, errors);
+    if (data.image !== undefined) {
+        validateImage(data.image, errors);
+    }
 
     // Return a validation result object.
     return {
@@ -111,6 +137,10 @@ export function validateUpdateLesson(data = {}) {
 
     if (data.createdBy !== undefined) {
         validateStudentEmail(data.createdBy, errors);
+    }
+
+    if (data.image !== undefined) {
+        validateImage(data.image, errors);
     }
     
     // Return a validation result object.

@@ -71,6 +71,7 @@ export class LessonService {
                 availableSpace: parseInt(lessonData.space),
                 price: parseFloat(lessonData.price),
                 students: [],
+                image: `images/lessons/${lessonData.image}` || "`images/lessons/other.jpeg",
                 createdBy: lessonData.createdBy,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -110,7 +111,7 @@ export class LessonService {
             const updateFields = {};
 
             // List of al fields that be updated.
-            const allowedFields = ["name", "description", "topic", "location", "space", "availableSpace", "price", "students", "createdBy", "createdAt", "updatedAt"];
+            const allowedFields = ["name", "description", "topic", "location", "space", "availableSpace", "price", "students", "image", "createdBy", "createdAt", "updatedAt"];
 
             for (const [key, value] of Object.entries(updateData)) {
                 // check if key is allows to be modify.
