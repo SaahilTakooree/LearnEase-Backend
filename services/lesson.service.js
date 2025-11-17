@@ -1,6 +1,6 @@
 // Import depencies.
 import { getCollection, COLLECTIONS} from "../config/database.js"; // Import helper function to access the database and collections.
-import { UserService } from "./user.service.js";
+import { UserService } from "./user.service.js"; // Import user service to access the users service.
 import { ObjectId } from "mongodb"; // Used to create and validate MongoDB Object IDs for documents.
 
 

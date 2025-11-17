@@ -10,10 +10,10 @@ const lessonRouter = express.Router();
 // Static routes.
 
 // Get a lessons taught be a teacher.
-lessonRouter.get("/taught", lessonController.getLessonByTeacher);
+lessonRouter.post("/taught", lessonController.getLessonByTeacher);
 
 // Get a lessons a student is enrolled in.
-lessonRouter.get("/enrolled", lessonController.getEnrolledLesson);
+lessonRouter.post("/enrolled", lessonController.getEnrolledLesson);
 
 
 // CRUD routes. 

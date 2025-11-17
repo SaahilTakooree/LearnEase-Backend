@@ -72,11 +72,11 @@ The backend exposes routes under the `/api` path, plus a static file endpoint fo
 - `GET /api/lessons/taught` – Get lessons by 'teacher' email.
 - `GET /api/lessons/enrolled` – Get lessons a user is enrolled in.
 
-### orders
+### Orders
 - `GET /api/orders` – Get all orders.
 - `POST /api/orders` – Create a new order.
 
-### search
+### Search
 - `GET /api/search` – ### Search
 - `GET /api/search?q=<keyword>` – Search lessons by keyword across `name`, `description`, `topic`, `location`, `price`, `space`, and `availableSpace`.
 

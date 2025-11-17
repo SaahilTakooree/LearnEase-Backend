@@ -27,7 +27,7 @@ export const login = async (request, response) => {
 
         // Log a success and send a 200 Ok response with user data.
         console.log(`User logged in successfully: ${email}`);
-        sendSuccess(response, user, "Login Sucessfull");
+        sendSuccess(response, email, "Login Sucessfull");
     } catch (error) {
 
         // Log any errors that occurs during login.
@@ -63,7 +63,7 @@ export const signup = async (request, response) => {
 
         // Log a success and send a 200 Ok response with user data.
         console.log(`User signed up successfully: ${email}`);
-        sendCreated(response, user, 'User signed up successfully');
+        sendCreated(response, email, 'User signed up successfully');
     } catch (error) {
         // Log any errors that occurs during signup.
         console.error("Signup error:", error);
@@ -98,7 +98,7 @@ export const resetPassword = async (request, response) => {
 
         // Log a success and send a 200 Ok response with user data.
         console.log(`User password reset was successful: ${email}`);
-        sendSuccess(response, user, "Reset Password Sucessfull");
+        sendSuccess(response, email, "Reset Password Sucessfull");
     } catch (error) {
         // Log any errors that occurs during reset password.
         console.error("Reset Password error:", error);

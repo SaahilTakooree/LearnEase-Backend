@@ -1,0 +1,6 @@
+[REQUEST] 2025-11-17T00:02:03.393Z POST /api/users/login IP:::1 Body: {
+  "email": "student@example.com",
+  "password": "**HIDDEN FOR PRIVACY**"
+}
+[LOG] 2025-11-17T00:02:03.472Z User logged in successfully: student@example.com
+[RESPONSE] 2025-11-17T00:02:03.474Z POST /api/users/login Status: 200 Duration: 82ms Body: {"status":"success","message":"Login Sucessfull","data":{"email":"student@example.com"},"timestamp":"2025-11-17T00:02:03.474Z"}

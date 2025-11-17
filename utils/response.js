@@ -1,7 +1,7 @@
 // Send a standardised JSON success reponse.
 export function sendSuccess(response, data, message = "Sucess.", statusCode = 200) {
     return response.status(statusCode).json({
-        status: 'succsss',
+        status: 'success',
         message,
         data,
         timestamp: new Date().toISOString()
