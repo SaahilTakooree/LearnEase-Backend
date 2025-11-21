@@ -37,7 +37,7 @@ npm install
 ```
 > This will install all required Node.js packages.
 ---
-## Run the project
+## Run the project (Locally)
 Open a terminal in the root folder of the project (where package.json is location), then run:
 ```bash
 npm start

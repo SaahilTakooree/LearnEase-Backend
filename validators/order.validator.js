@@ -1,6 +1,14 @@
 // Import helper function.
-import { validateStringField, validateEmailField } from "../utils/validationHelper.js";
+import { validateEmailField } from "../utils/validationHelper.js";
 
+// Function to strictly validate a name (letters only)
+function validateName(name, errors) {
+    if (!name || name.trim() === "") {
+        errors.push({ field: "name", message: "Name is required." });
+    } else if (!/^[A-Za-z]+$/.test(name)) {
+        errors.push({ field: "name", message: "Name must contain letters only." });
+    }
+}
 
 // Function to validate a phone number.
 function validatePhoneNumber(phone, errors) {
@@ -8,7 +16,7 @@ function validatePhoneNumber(phone, errors) {
     if(!phone || phone.trim() === "") {
         errors.push({ field: "phone", message: "Phone is required."});
     // Check if the phone number matches the specified format.
-    } else if (!/^\+?\d{7,15}$/.test(phone)) {
+    } else if (!/^\d{7,15}$/.test(phone)) {
         errors.push({ field: "phone", message: "Invalid phone number format." });
     }
 }
@@ -37,7 +45,7 @@ export function validateCreateOrder(data = {}) {
     const errors = [];
     
     // Validate data.
-    validateStringField(data.name, "name", errors);
+    validateName(data.name, errors);
     validatePhoneNumber(data.phone, errors);
     validateLessonsData(data.lessonsData, errors);
     validateEmailField(data.email, "email", errors);

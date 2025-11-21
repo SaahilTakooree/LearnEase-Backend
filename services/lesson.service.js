@@ -69,6 +69,9 @@ export class LessonService {
                 }
             }
 
+            // Check if lesson already exist.
+            await this.duplicateCheck(lessonData);
+
             // Insert new lesson to the lesson collection.
             const result = await this.collection.insertOne({
                 name: lessonData.name,
@@ -102,6 +105,9 @@ export class LessonService {
             // Check if the lesson id is valid.
             const lessonId = this.validateId(id);
             const lesson = await this.getLessonById(lessonId);
+
+            // Check if lesson already exist.
+            await this.duplicateCheck(updateData, lessonId);
 
             // Calculate total booked space by summing all students' space.
             const bookedSpace = lesson.students
@@ -167,6 +173,12 @@ export class LessonService {
 
                     if (!email) {
                         throw new Error ("Missing 'email' field inside 'student' object.");
+                    }
+
+                    // if lesson createdby is provided.. check it that user exist.
+                    const user = await this.userService.findByEmail(email);
+                    if (!user) {
+                        throw new Error(`User with email ${email} does not exist.`);
                     }
 
                     // Only require 'space' if adding a student.
@@ -355,6 +367,25 @@ export class LessonService {
         } catch (error) {
             console.error(`Error in fetching enrolled lessons for: ${email}`, error);
             throw error;
+        }
+    }
+
+
+    // Function to check if lesson already exist.
+    async duplicateCheck(lessonData) {
+        // Check if lesson with lesson data already exist. if yes throw an error.
+        const query = {
+            name: lessonData.name,
+            topic: lessonData.topic,
+            location: lessonData.location,
+            space: parseInt(lessonData.space),
+            price: parseFloat(lessonData.price),
+            image: `/images/lessons/${lessonData.image}`
+        };
+
+        const existingLesson = await this.collection.findOne(query);
+        if (existingLesson) {
+            throw new Error("Lesson already exists.");
         }
     }
 }

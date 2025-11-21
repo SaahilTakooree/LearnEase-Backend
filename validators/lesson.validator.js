@@ -10,7 +10,7 @@ function validateImage(image, errors) {
         "biology.jpeg",
         "chemistry.jpeg",
         "computer.jpeg",
-        "default.jpeg",
+        "other.jpeg",
         "english.jpeg",
         "history.jpeg",
         "math.jpeg",
