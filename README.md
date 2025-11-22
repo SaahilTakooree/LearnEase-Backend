@@ -36,6 +36,41 @@ Open a terminal in the root folder of the project (where package.json is locatio
 npm install
 ```
 > This will install all required Node.js packages.
+3.  CORS Configuration **(If running the frontend locally.)**
+
+The server uses CORS to control which frontends are allowed to send requests.
+
+Inside index.js, the CORS middleware is currently configured like this:
+``` javascript
+app.use(cors({
+    origin: "https://saahiltakooree.github.io",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+}));
+```
+#### What this means
+
+This configuration only allows requests from:
+
+>https://saahiltakooree.github.io
+
+
+So if you try to call the API from:
+- http://localhost:3000
+- Any device on your home network
+- Another domain
+
+Your request will be blocked by CORS.
+
+Running the Backend Locally (Change Required)
+
+If you want to run the frontend locally, you must change the origin value to allow the local frontend.
+
+Replace the CORS config with:
+
+```javascript
+app.use(cors());
+```
+> This allows requests from any domain.
 ---
 ## Run the project (Locally)
 Open a terminal in the root folder of the project (where package.json is location), then run:
