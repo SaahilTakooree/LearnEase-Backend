@@ -15,11 +15,10 @@ const port = process.env.PORT || 6969;
 
 
 // Middleware.
-app.use(cors());
-// app.use(cors({
-//     origin: "https://saahiltakooree.github.io",
-//     methods: ["GET", "POST", "PUT", "DELETE"]
-// })); // Enables CORS for all routes.
+app.use(cors({
+    origin: "https://saahiltakooree.github.io",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+})); // Enables CORS for all routes.
 app.use(express.json()); // Allows for automatic parsing of incoming JSON payloads in request.
 app.use(loggerMiddleware); // Allows for logging.
 staticFilesMiddleware(app);; // Allows sending of static file to the front end.
