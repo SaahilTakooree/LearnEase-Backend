@@ -140,6 +140,8 @@ export class LessonService {
                     if (newAvailableSpace < 0) {
                         throw new Error(`Available space cannot be less than zero.`);
                     }
+                } else if (key === "image") {
+                    updateFields.image = `/images/lessons/${value}`;
                 } else if (key === "price") {
                     updateFields.price = parseFloat(value);
                 } else if (key === "createdBy") {

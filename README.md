@@ -71,6 +71,8 @@ Replace the CORS config with:
 app.use(cors());
 ```
 > This allows requests from any domain.
+> Important: If you run the backend locally, you cannot use the deployed frontend hosted at https://saahiltakooree.github.io/LearnEase/ due to CORS restrictions. To run the frontend locally, you must clone the frontend repo and follow its configuration:
+https://github.com/SaahilTakooree/LearnEase
 ---
 ## Run the project (Locally)
 Open a terminal in the root folder of the project (where package.json is location), then run:
